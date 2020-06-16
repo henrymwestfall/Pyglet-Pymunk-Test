@@ -34,16 +34,21 @@ integrity = 100
 base = 20
 previous = (0, random.randint(0, 500) // 10 + base)
 segments = []
+slope_angles = []
 while previous[0] < 900:
     x = random.randint(previous[0] + 10, previous[0] + 50)
     y = 100 * math.sin(x) + 100 + base#random.randint(0, 500) // 5 + base
     diff = (x - previous[0], y - previous[1])
-    shape = pymunk.Segment(space.static_body, previous, (x, y), 3)
+    angle = math.atan2(*diff)
+    slope_angles.append(angle)
+    shape = pymunk.Segment(space.static_body, previous, (x, y), 1)
     shape.body.elasticity = 0.1
     shape.body.friction = 10.0
     space.add(shape)
     segments.append(shape)
     previous = x, y
+
+score_multiplier = min(slope_angles) / math.pi * 0.5
 
 # labels
 y_vel_label = pyglet.text.Label("Vertical Velocity: 0 mps",
@@ -76,6 +81,15 @@ integrity_label = pyglet.text.Label("Lander Integrity: 100%",
                                 x=8, y=512,
                                 anchor_x='left', anchor_y='top'
 )
+score_label = pyglet.text.Label("Score: 0",
+                                color=(255, 255, 255, 255),
+                                font_size=24,
+                                x=window.width // 2, y=window.height // 2,
+                                anchor_x="center", anchor_y="center"
+)
+
+landed = False
+landed_time = 0
 
 @window.event
 def on_draw():
@@ -85,6 +99,8 @@ def on_draw():
     rotation_label.draw()
     fuel_label.draw()
     integrity_label.draw()
+    if landed:
+        score_label.draw()
     space.debug_draw(options)
 
 # history of frame length
@@ -94,7 +110,7 @@ dts = []
 last_keys_pressed = set()
 
 def update(dt):
-    global fuel, integrity
+    global fuel, integrity, landed, landed_time
 
     window.push_handlers(keys)
     if fuel > 0:
@@ -134,10 +150,19 @@ def update(dt):
     fuel_label.text = f"Fuel: {round(fuel, 1)}%"
     integrity_label.text = f"Lander Condition: {round(integrity, 1)}%"
     
-
+    colliding_with_ground = False
     for seg in segments:
         if len(lander_shape.shapes_collide(seg).points) > 0:
             integrity -= lander.velocity.length * dt
+            colliding_with_ground = True
+    
+    if colliding_with_ground and round(lander.velocity.length) <= 2.0 and not landed:
+        score = round(integrity * 1000 * score_multiplier)
+        score_label.text = f"Score: {score}"
+        landed_time += dt
+        landed = landed_time > 1
+    else:
+        landed_time = 0
 
     space.step(dt)
     dts.append(dt)
