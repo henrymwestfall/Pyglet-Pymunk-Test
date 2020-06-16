@@ -87,6 +87,21 @@ score_label = pyglet.text.Label("Score: 0",
                                 x=window.width // 2, y=window.height // 2,
                                 anchor_x="center", anchor_y="center"
 )
+help_text = """
+Press Left/Right to use steering thrusters and up to engage the main thruster. \n
+The lander must be moving at less than 2 mps for the lander gear to work. \n
+Press SPACE to begin.
+"""
+help_text = pyglet.text.Label(help_text,
+                            color=(255, 255, 255, 255),
+                            font_size=16,
+                            x=window.width // 2, y=window.height // 2,
+                            anchor_x="center", anchor_y="bottom",
+                            multiline=True,
+                            width=400
+)
+
+in_help_mode = True
 
 landed = False
 landed_time = 0
@@ -101,6 +116,8 @@ def on_draw():
     integrity_label.draw()
     if landed:
         score_label.draw()
+    if in_help_mode:
+        help_text.draw()
     space.debug_draw(options)
 
 # history of frame length
@@ -110,9 +127,15 @@ dts = []
 last_keys_pressed = set()
 
 def update(dt):
-    global fuel, integrity, landed, landed_time
+    global fuel, integrity, landed, landed_time, in_help_mode
 
     window.push_handlers(keys)
+    if in_help_mode and keys[key.SPACE]:
+        in_help_mode = False
+
+    if in_help_mode:
+        return
+
     if fuel > 0:
         if keys[key.W]:
             lander.apply_impulse_at_local_point((0, 50 * dt))
