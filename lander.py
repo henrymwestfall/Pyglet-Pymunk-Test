@@ -17,13 +17,13 @@ space = pymunk.Space()
 space.gravity = 0, -5
 
 # lander
-mass = 1
+mass = 1000
 lander = pymunk.Body(mass)
 vertices = [(0, 0), (15, 30), (30, 0)]
 lander_shape = pymunk.Poly(lander, vertices)
 lander.moment = pymunk.moment_for_poly(mass, vertices)
 lander.position = 450, 600
-lander.elasticity = 0.1
+lander.elasticity = 0.0
 lander.friction = 0.8
 space.add(lander, lander_shape)
 
@@ -42,13 +42,13 @@ while previous[0] < 900:
     angle = math.atan2(*diff)
     slope_angles.append(angle)
     shape = pymunk.Segment(space.static_body, previous, (x, y), 1)
-    shape.body.elasticity = 0.1
-    shape.body.friction = 10.0
+    shape.body.elasticity = 0.0
+    shape.body.friction = 1.0
     space.add(shape)
     segments.append(shape)
     previous = x, y
 
-score_multiplier = min(slope_angles) / math.pi * 0.5
+score_multiplier = 1#min(slope_angles) / math.pi * 0.5
 
 # labels
 y_vel_label = pyglet.text.Label("Vertical Velocity: 0 mps",
