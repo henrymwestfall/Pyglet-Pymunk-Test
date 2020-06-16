@@ -89,7 +89,7 @@ score_label = pyglet.text.Label("Score: 0",
 )
 help_text = """
 Press Left/Right to use steering thrusters and up to engage the main thruster. \n
-The lander must be moving at less than 2 mps for 5 seconds in order to use the landing gear. \n
+The lander must be moving at less than 4 mps for 5 seconds in order to use the landing gear. \n
 Press SPACE to begin.
 """
 help_text = pyglet.text.Label(help_text,
@@ -140,14 +140,14 @@ def update(dt):
         if keys[key.W]:
             lander.apply_impulse_at_local_point((0, 50 * dt))
             last_keys_pressed.add(key.W)
-            fuel -= 10 * dt
+            fuel -= 20 * dt
         elif key.W in last_keys_pressed:
             last_keys_pressed.remove(key.W)
 
         if keys[key.A]:
             lander.apply_impulse_at_local_point((100 * dt, 0), (0, -10))
             last_keys_pressed.add(key.A)
-            fuel -= 4 * dt
+            fuel -= 8 * dt
         elif key.A in last_keys_pressed:
             lander.angular_velocity = 0
             last_keys_pressed.remove(key.A)
@@ -155,7 +155,7 @@ def update(dt):
         if keys[key.D]:
             lander.apply_impulse_at_local_point((-100 * dt, 0), (0, -10))
             last_keys_pressed.add(key.D)
-            fuel -= 4 * dt
+            fuel -= 8 * dt
         elif key.D in last_keys_pressed:
             lander.angular_velocity = 0
             last_keys_pressed.remove(key.D)
@@ -177,10 +177,10 @@ def update(dt):
     colliding_with_ground = False
     for seg in segments:
         if len(lander_shape.shapes_collide(seg).points) > 0:
-            integrity -= lander.velocity.length * dt
+            integrity -= lander.velocity.length * dt * 0.5
             colliding_with_ground = True
     
-    if colliding_with_ground and round(lander.velocity.length) <= 2.0 and not landed:
+    if colliding_with_ground and round(lander.velocity.length) <= 4.0 and not landed:
         score = round(integrity * 1000 * score_multiplier)
         score_label.text = f"Score: {score}"
         landed_time += dt
