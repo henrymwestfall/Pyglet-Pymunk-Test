@@ -167,11 +167,12 @@ def update(dt):
     elif lander.position.x < 0:
         lander.position.x = 900
 
-    y_vel_label.text = f"Vertical Velocity:\t{round(lander.velocity.y)} mps"
-    x_vel_label.text = f"Horizontal Velocity:\t{round(lander.velocity.x)} mps"
-    rotation_label.text = f"Rotation: {round(math.degrees(lander.angle))} degrees, {round(lander.angle, 3)} radians"
-    fuel_label.text = f"Fuel: {round(fuel, 1)}%"
-    integrity_label.text = f"Lander Condition: {round(integrity, 1)}%"
+    if not landed:
+        y_vel_label.text = f"Vertical Velocity:\t{round(lander.velocity.y)} mps"
+        x_vel_label.text = f"Horizontal Velocity:\t{round(lander.velocity.x)} mps"
+        rotation_label.text = f"Rotation: {round(math.degrees(lander.angle))} degrees, {round(lander.angle, 3)} radians"
+        fuel_label.text = f"Fuel: {round(fuel, 1)}%"
+        integrity_label.text = f"Lander Condition: {round(integrity, 1)}%"
     
     colliding_with_ground = False
     for seg in segments:
@@ -187,7 +188,8 @@ def update(dt):
     else:
         landed_time = 0
 
-    space.step(dt)
+    if not landed:
+        space.step(dt)
     dts.append(dt)
 
 if __name__ == "__main__":
