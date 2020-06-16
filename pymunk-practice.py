@@ -15,8 +15,8 @@ space.gravity = 0, -1000
 
 circles = Group()
 circles.add_all([
-    Circle(450, 400, 30, 2),
-    Circle(452, 300, 30)
+    Circle(450, 500, 30, 2),
+    Circle(452, 400, 30)
 ])
 circles.set_attribute("elasticity", 0.98)
 circles.set_attribute("friction", 1.0)
@@ -32,7 +32,6 @@ segments.add_all([
 segments.set_attribute("elasticity", 0.98)
 segments.set_attribute("friction", 1.0)
 segments.add_to_space(space)
-
 
 @window.event
 def on_draw():
