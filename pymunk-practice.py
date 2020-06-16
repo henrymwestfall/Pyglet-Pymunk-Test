@@ -5,7 +5,7 @@ from pymunk.pyglet_util import DrawOptions
 
 import pyglet
 
-import engine
+from engine.body import Group, Body, Circle, Segment
 
 window = pyglet.window.Window(900, 600, "Pymunk Tester", resizable=False)
 options = DrawOptions()
@@ -13,21 +13,21 @@ options = DrawOptions()
 space = pymunk.Space()
 space.gravity = 0, -1000
 
-circles = engine.Group()
+circles = Group()
 circles.add_all([
-    engine.Circle(450, 400, 30, 2),
-    engine.Circle(452, 300, 30)
+    Circle(450, 400, 30, 2),
+    Circle(452, 300, 30)
 ])
 circles.set_attribute("elasticity", 0.98)
 circles.set_attribute("friction", 1.0)
 circles.add_to_space(space)
 
-segments = engine.Group()
+segments = Group()
 segments.add_all([
-    engine.Segment((50, 50), (850, 50), 2, body_type=engine.Body.STATIC),
-    engine.Segment((50, 550), (50, 50), 2, body_type=engine.Body.STATIC),
-    engine.Segment((50, 550), (850, 550), 2, body_type=engine.Body.STATIC),
-    engine.Segment((850, 550), (850, 50), 2, body_type=engine.Body.STATIC)
+    Segment((50, 50), (850, 50), 2, body_type=Body.STATIC),
+    Segment((50, 550), (50, 50), 2, body_type=Body.STATIC),
+    Segment((50, 550), (850, 550), 2, body_type=Body.STATIC),
+    Segment((850, 550), (850, 50), 2, body_type=Body.STATIC)
 ])
 segments.set_attribute("elasticity", 0.98)
 segments.set_attribute("friction", 1.0)
