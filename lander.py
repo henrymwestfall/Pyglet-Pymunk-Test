@@ -89,7 +89,7 @@ score_label = pyglet.text.Label("Score: 0",
 )
 help_text = """
 Press Left/Right to use steering thrusters and up to engage the main thruster. \n
-The lander must be moving at less than 2 mps for the landing gear to work. \n
+The lander must be moving at less than 2 mps for 5 seconds in order to use the landing gear. \n
 Press SPACE to begin.
 """
 help_text = pyglet.text.Label(help_text,
@@ -184,7 +184,7 @@ def update(dt):
         score = round(integrity * 1000 * score_multiplier)
         score_label.text = f"Score: {score}"
         landed_time += dt
-        landed = landed_time > 1
+        landed = landed_time > 5
     else:
         landed_time = 0
 
