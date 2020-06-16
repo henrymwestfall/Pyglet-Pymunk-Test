@@ -97,28 +97,31 @@ def update(dt):
     global fuel, integrity
 
     window.push_handlers(keys)
-    if keys[key.W]:
-        lander.apply_impulse_at_local_point((0, 50 * dt))
-        last_keys_pressed.add(key.W)
-        fuel -= 5 * dt
-    elif key.W in last_keys_pressed:
-        last_keys_pressed.remove(key.W)
+    if fuel > 0:
+        if keys[key.W]:
+            lander.apply_impulse_at_local_point((0, 50 * dt))
+            last_keys_pressed.add(key.W)
+            fuel -= 10 * dt
+        elif key.W in last_keys_pressed:
+            last_keys_pressed.remove(key.W)
 
-    if keys[key.A]:
-        lander.apply_impulse_at_local_point((100 * dt, 0), (0, -10))
-        last_keys_pressed.add(key.A)
-        fuel -= 2 * dt
-    elif key.A in last_keys_pressed:
-        lander.angular_velocity = 0
-        last_keys_pressed.remove(key.A)
-    
-    if keys[key.D]:
-        lander.apply_impulse_at_local_point((-100 * dt, 0), (0, -10))
-        last_keys_pressed.add(key.D)
-        fuel -= 2 * dt
-    elif key.D in last_keys_pressed:
-        lander.angular_velocity = 0
-        last_keys_pressed.remove(key.D)
+        if keys[key.A]:
+            lander.apply_impulse_at_local_point((100 * dt, 0), (0, -10))
+            last_keys_pressed.add(key.A)
+            fuel -= 4 * dt
+        elif key.A in last_keys_pressed:
+            lander.angular_velocity = 0
+            last_keys_pressed.remove(key.A)
+
+        if keys[key.D]:
+            lander.apply_impulse_at_local_point((-100 * dt, 0), (0, -10))
+            last_keys_pressed.add(key.D)
+            fuel -= 4 * dt
+        elif key.D in last_keys_pressed:
+            lander.angular_velocity = 0
+            last_keys_pressed.remove(key.D)
+    else:
+        fuel = 0.0
 
     if lander.position.x > 900:
         lander.position.x = 0
