@@ -22,6 +22,9 @@ circles.set_attribute("elasticity", 0.98)
 circles.set_attribute("friction", 1.0)
 circles.add_to_space(space)
 
+pj = pymunk.PinJoint(*[c.body for c in circles.children])
+space.add(pj)
+
 segments = Group()
 segments.add_all([
     Segment((50, 50), (850, 50), 2, body_type=Body.STATIC),

@@ -115,6 +115,13 @@ class Circle(Body):
         self.add_properties = (self.body, self.shape)
 
 
+class Polygon(Body):
+    def __init__(self, x, y, vertices, anchor="first", mass=1, moment="default", body_type=Body.DYNAMIC):
+        super().__init__(x, y, mass, body_type)
+
+        self.vertices = vertices
+
+
 class Rectangle(Body):
     def __init__(self, x, y, width, height, mass=1, moment="default", body_type=Body.DYNAMIC):
         super().__init__(x, y, mass, body_type)
@@ -148,8 +155,8 @@ class Rectangle(Body):
 
 
 class Segment(Body):
-    def __init__(self, a, b, thickness=1, mass=1, moment="default", body_type=Body.DYNAMIC):
-        super().__init__(*a, mass, body_type)
+    def __init__(self, x, y, a, b, thickness=1, mass=1, moment="default", body_type=Body.DYNAMIC):
+        super().__init__(x, y, mass, body_type)
 
         self.__thickness = thickness
 

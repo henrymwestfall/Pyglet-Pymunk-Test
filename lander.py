@@ -147,7 +147,7 @@ def update(dt):
             last_keys_pressed.remove(key.W)
 
         if keys[key.A]:
-            lander.apply_impulse_at_local_point((steering * dt, 0), (0, -10))
+            lander.apply_impulse_at_local_point((steering * dt, 0), (15, -10))
             last_keys_pressed.add(key.A)
             fuel -= 8 * dt
         elif key.A in last_keys_pressed:
@@ -155,7 +155,7 @@ def update(dt):
             last_keys_pressed.remove(key.A)
 
         if keys[key.D]:
-            lander.apply_impulse_at_local_point((-steering * dt, 0), (0, -10))
+            lander.apply_impulse_at_local_point((-steering * dt, 0), (15, -10))
             last_keys_pressed.add(key.D)
             fuel -= 8 * dt
         elif key.D in last_keys_pressed:
@@ -180,7 +180,7 @@ def update(dt):
     for seg in segments:
         if len(lander_shape.shapes_collide(seg).points) > 0:
             if lander.velocity.length > 4.0:
-                integrity -= lander.kinetic_energy * dt * 0.000001
+                integrity -= lander.kinetic_energy * dt * 0.000005
             colliding_with_ground = True
     
     if colliding_with_ground and round(lander.velocity.length) <= 4.0 and not landed:
