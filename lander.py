@@ -25,6 +25,8 @@ lander.moment = pymunk.moment_for_poly(mass, vertices)
 lander.position = 450, 600
 lander.elasticity = 0.0
 lander.friction = 0.8
+steering = 300000
+thruster = 100000
 space.add(lander, lander_shape)
 
 fuel = 100
@@ -138,14 +140,14 @@ def update(dt):
 
     if fuel > 0:
         if keys[key.W]:
-            lander.apply_impulse_at_local_point((0, 50 * dt))
+            lander.apply_impulse_at_local_point((0, thruster * dt))
             last_keys_pressed.add(key.W)
             fuel -= 20 * dt
         elif key.W in last_keys_pressed:
             last_keys_pressed.remove(key.W)
 
         if keys[key.A]:
-            lander.apply_impulse_at_local_point((100 * dt, 0), (0, -10))
+            lander.apply_impulse_at_local_point((steering * dt, 0), (0, -10))
             last_keys_pressed.add(key.A)
             fuel -= 8 * dt
         elif key.A in last_keys_pressed:
@@ -153,7 +155,7 @@ def update(dt):
             last_keys_pressed.remove(key.A)
 
         if keys[key.D]:
-            lander.apply_impulse_at_local_point((-100 * dt, 0), (0, -10))
+            lander.apply_impulse_at_local_point((-steering * dt, 0), (0, -10))
             last_keys_pressed.add(key.D)
             fuel -= 8 * dt
         elif key.D in last_keys_pressed:
@@ -177,11 +179,11 @@ def update(dt):
     colliding_with_ground = False
     for seg in segments:
         if len(lander_shape.shapes_collide(seg).points) > 0:
-            integrity -= lander.velocity.length * dt * 0.5
+            integrity -= lander.velocity.length * dt
             colliding_with_ground = True
     
     if colliding_with_ground and round(lander.velocity.length) <= 4.0 and not landed:
-        score = round(integrity * 1000 * score_multiplier)
+        score = round(integrity * 100 * score_multiplier)
         score_label.text = f"Score: {score}"
         landed_time += dt
         landed = landed_time > 5
