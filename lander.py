@@ -14,10 +14,10 @@ keys = key.KeyStateHandler()
 options = DrawOptions()
 
 space = pymunk.Space()
-space.gravity = 0, -5
+space.gravity = 0, -20
 
 # lander
-mass = 1000
+mass = 10000
 lander = pymunk.Body(mass)
 vertices = [(0, 0), (15, 30), (30, 0)]
 lander_shape = pymunk.Poly(lander, vertices)
@@ -25,8 +25,8 @@ lander.moment = pymunk.moment_for_poly(mass, vertices)
 lander.position = 450, 600
 lander.elasticity = 0.0
 lander.friction = 0.8
-steering = 300000
-thruster = 100000
+steering = 3000000
+thruster = 1000000
 space.add(lander, lander_shape)
 
 fuel = 100
@@ -50,7 +50,7 @@ while previous[0] < 900:
     segments.append(shape)
     previous = x, y
 
-score_multiplier = 1#min(slope_angles) / math.pi * 0.5
+score_multiplier = min(slope_angles) / math.pi * 0.5
 
 # labels
 y_vel_label = pyglet.text.Label("Vertical Velocity: 0 mps",
@@ -179,11 +179,12 @@ def update(dt):
     colliding_with_ground = False
     for seg in segments:
         if len(lander_shape.shapes_collide(seg).points) > 0:
-            integrity -= lander.velocity.length * dt
+            if lander.velocity.length > 4.0:
+                integrity -= lander.velocity.length * dt * 4
             colliding_with_ground = True
     
     if colliding_with_ground and round(lander.velocity.length) <= 4.0 and not landed:
-        score = round(integrity * 100 * score_multiplier)
+        score = round(integrity * fuel * 100 * score_multiplier)
         score_label.text = f"Score: {score}"
         landed_time += dt
         landed = landed_time > 5
