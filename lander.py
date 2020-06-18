@@ -97,7 +97,7 @@ score_label = pyglet.text.Label("Score: 0",
                                 anchor_x="center", anchor_y="center"
 )
 help_text = """
-Press Left/Right to use steering thrusters and up to engage the main thruster. \n
+Press Left/Right or A/D to use steering thrusters and Up or W to engage the main thruster. \n
 The lander must be moving at less than 4 mps for 5 seconds in order to use the landing gear. \n
 Press SPACE to begin.
 """
