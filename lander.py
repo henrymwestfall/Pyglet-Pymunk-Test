@@ -16,12 +16,21 @@ options = DrawOptions()
 space = pymunk.Space()
 space.gravity = 0, -20
 
+def centroid(vertices):
+    sumx = 0
+    sumy = 0
+    for v in vertices:
+        sumx += v[0]
+        sumy += v[1]
+    return (sumx / len(vertices), sumy / len(vertices))
+
 # lander
 mass = 10000
 lander = pymunk.Body(mass)
 vertices = [(0, 0), (15, 30), (30, 0)]
 lander_shape = pymunk.Poly(lander, vertices)
 lander.moment = pymunk.moment_for_poly(mass, vertices)
+lander.center_of_gravity = centroid(vertices)
 lander.position = 450, 600
 lander.elasticity = 0.0
 lander.friction = 0.8
@@ -140,24 +149,26 @@ def update(dt):
 
     if fuel > 0:
         if keys[key.W]:
-            lander.apply_impulse_at_local_point((0, thruster * dt))
+            lander.apply_impulse_at_local_point((0, thruster * dt), lander.center_of_gravity)
             last_keys_pressed.add(key.W)
-            fuel -= 20 * dt
+            fuel -= 10 * dt
         elif key.W in last_keys_pressed:
             last_keys_pressed.remove(key.W)
 
         if keys[key.A]:
-            lander.apply_impulse_at_local_point((steering * dt, 0), (15, -10))
+            lander.apply_impulse_at_local_point((steering * dt, 0), (0, 0))
+            lander.apply_impulse_at_local_point((-steering * dt, 0), (15, 30))
             last_keys_pressed.add(key.A)
-            fuel -= 8 * dt
+            fuel -= 4 * dt
         elif key.A in last_keys_pressed:
             lander.angular_velocity = 0
             last_keys_pressed.remove(key.A)
 
         if keys[key.D]:
-            lander.apply_impulse_at_local_point((-steering * dt, 0), (15, -10))
+            lander.apply_impulse_at_local_point((-steering * dt, 0), (30, 0))
+            lander.apply_impulse_at_local_point((steering * dt, 0), (15,  30))
             last_keys_pressed.add(key.D)
-            fuel -= 8 * dt
+            fuel -= 4 * dt
         elif key.D in last_keys_pressed:
             lander.angular_velocity = 0
             last_keys_pressed.remove(key.D)

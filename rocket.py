@@ -31,13 +31,46 @@ class Part:
     RADIAL = 1
 
     def __init__(self):
-        self.vertices = []
+        self.vertices = [(0, 0)]
 
         self.mount = Part.STACKED
 
         self.mass = 0
         self.radial_size = 0 # only applies to circular parts
         self.height = 0
+
+        self.impact_tolerance = 0 # mps
+        self.heat_tolerance = 0
+
+    def move_to(self, x, y):
+        self.vertices = [(v[0] + x, v[1] + y) for v in self.vertices]
+
+
+class Engine(Part):
+    def __init__(self):
+        super().__init__()
+
+        self.radial_size = 90
+        self.height = 180
+
+        self.mass = 150
+        self.burn = 8.8
+        self.burning = False
+        self.atm_thrust = 162.91
+        self.vac_thrust = 192.0
+
+    def engage(self):
+        self.burning = True
+
+    def get_impulse(self, dt):
+        if self.burning:
+            self.burn -= dt
+            bottom_left = self.vertices[0]
+            impulse_x = bottom_left[0] + self.radial_size // 2
+            impulse_y = bottom_left[1] - self.height // 2
+            return (impulse_x, impulse_y, self.atm_thrust)
+        else:
+            return (0, 0, 0)
 
 
 class Rocket:
@@ -71,18 +104,19 @@ class Rocket:
         # create body
         body = pymunk.Body(mass)
         shape = pymunk.Poly(body, vertices)
-        body.moment = pymunk.moment_for_poly(mass, vertices, offset)
+        body.moment = pymunk.moment_for_poly(mass, vertices)
+        body.center_of_gravity = com
         body.position = 450, 300
 
         return body, shape, body.local_to_world(com)
 
 pod = Part()
 pod.vertices = [(0, 0), (45, 90), (90, 0)]
-pod.mass = 5
+pod.mass = 10
 
-engine = Part()
-engine.vertices = [(0, 0), (90, 0), (0, -100), (90, -100)]
-engine.mass = 15
+engine = Engine()
+engine.vertices = [(0, 0), (0, -engine.height), (engine.radial_size, -engine.height), (engine.radial_size, 0)]
+engine.engage()
 
 rocket = Rocket()
 rocket.parts = [pod, engine]
@@ -94,6 +128,11 @@ label = pyglet.text.Label("Center Of Mass",
                           font_size=8,
                           x=com[0], y=com[1],
                           anchor_x="center", anchor_y="center")
+x, y = body.local_to_world((45, 90))
+label2 = pyglet.text.Label("(45, 90)",
+                          font_size=8,
+                          x=x, y=y,
+                          anchor_x="center", anchor_y="center")
         
 
 @window.event
@@ -101,8 +140,20 @@ def on_draw():
     window.clear()
     space.debug_draw(options)
     label.draw()
+    label2.draw()
 
 def update(dt):
+    global label2
+
+    impulse_x, impulse_y, impulse_amount = engine.get_impulse(dt)
+    x, y = body.local_to_world((impulse_x, impulse_y))
+    label2 = pyglet.text.Label("Impulse",
+                          font_size=8,
+                          x=x, y=y,
+                          anchor_x="center", anchor_y="center")
+
+    impulse_x, impulse_y, impulse_amount = engine.get_impulse(dt)
+    body.apply_impulse_at_local_point((0, impulse_amount), (impulse_x, impulse_y))
     space.step(dt)
 
 if __name__ == "__main__":
