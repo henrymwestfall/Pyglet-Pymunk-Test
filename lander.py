@@ -7,8 +7,6 @@ from pymunk.pyglet_util import DrawOptions
 import pyglet
 from pyglet.window import key
 
-from engine.body import Group, Body, Circle, Segment
-
 window = pyglet.window.Window(900, 600, "Pymunk Tester", resizable=False)
 keys = key.KeyStateHandler()
 options = DrawOptions()
