@@ -193,7 +193,8 @@ def update(dt):
             colliding_with_ground = True
     
     if colliding_with_ground and round(lander.velocity.length) <= 4.0 and not landed:
-        score = round(integrity * fuel * 100 * score_multiplier)
+        lander.velocity.x = 0
+        score = round((integrity * 1000 + fuel * 1000) * score_multiplier)
         score_label.text = f"Score: {score}"
         landed_time += dt
         landed = landed_time > 5

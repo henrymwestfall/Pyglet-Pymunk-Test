@@ -21,6 +21,7 @@ def create_pogo(space, x, y):
     carriage_b = pymunk.Body(mass, moment)
     carriage_s = pymunk.Poly.create_box(carriage_b, size)
     carriage_s.color = 255, 0, 0
+    carriage_s.friction = 0.4
     space.add(carriage_b, carriage_s)
     sprites.append((carriage_b, carriage_s))
 
@@ -138,15 +139,15 @@ def create_rover(space, x, y):
     sprites.append((wheel2_b, wheel2_s))
 
     # third wheel
-    # mass = 10
-    # radius = 25
-    # moment = pymunk.moment_for_circle(mass, 20, radius)
-    # wheel3_b = pymunk.Body(mass, moment)
-    # wheel3_s = pymunk.Circle(wheel3_b, radius)
-    # wheel3_s.friction = 1.5
-    # wheel3_s.color = wheel_color
-    # space.add(wheel3_b, wheel3_s)
-    # sprites.append((wheel3_b, wheel3_s))
+    mass = 10
+    radius = 25
+    moment = pymunk.moment_for_circle(mass, 20, radius)
+    wheel3_b = pymunk.Body(mass, moment)
+    wheel3_s = pymunk.Circle(wheel3_b, radius)
+    wheel3_s.friction = 1.5
+    wheel3_s.color = wheel_color
+    space.add(wheel3_b, wheel3_s)
+    sprites.append((wheel3_b, wheel3_s))
 
     # chassis
     mass = 100
@@ -157,25 +158,38 @@ def create_rover(space, x, y):
     space.add(chassis_b, chassis_s)
     sprites.append((chassis_b, chassis_s))
 
+    # plow
+    mass = 50
+    vertices = [(0, 0), (0, 50), (25, 0)]
+    moment = pymunk.moment_for_poly(mass, vertices)
+    plow_b = pymunk.Body(mass, moment)
+    plow_s = pymunk.Poly(plow_b, vertices)
+    space.add(plow_b, plow_s)
+    sprites.append((plow_b, plow_s))
+
     wheel1_b.position = pos + (-55, 0)
     wheel2_b.position = pos + (55, 0)
-    # wheel3_b.position = pos + (0, 90)
+    wheel3_b.position = pos + (0, 90)
     chassis_b.position = pos + (0, 30)
+    plow_b.position = pos + (95, -20)
 
     space.add(
         pymunk.PinJoint(wheel1_b, chassis_b, (0, 0), (-25, -15)),
         pymunk.PinJoint(wheel1_b, chassis_b, (0, 0), (-25,  15)),
         pymunk.PinJoint(wheel2_b, chassis_b, (0, 0), (25,  -15)),
-        pymunk.PinJoint(wheel2_b, chassis_b, (0, 0), (25,   15))
-        # pymunk.PinJoint(wheel3_b, chassis_b, (0, 0), (-25, 15)),
-        # pymunk.PinJoint(wheel3_b, chassis_b, (0, 0), (25, 15))
+        pymunk.PinJoint(wheel2_b, chassis_b, (0, 0), (25,   15)),
+        pymunk.PinJoint(wheel3_b, chassis_b, (0, 0), (-25, 15)),
+        pymunk.PinJoint(wheel3_b, chassis_b, (0, 0), (25, 15)),
+        pymunk.PinJoint(chassis_b, plow_b, (25, 25), (0, 50)),
+        pymunk.PinJoint(wheel2_b, plow_b, (0, 0), (0, 0)),
+        pymunk.PinJoint(wheel2_b, plow_b, (0, 0), (0, 50))
     )
 
     speed = 0
     motors = [
         pymunk.SimpleMotor(wheel1_b, chassis_b, speed),
         pymunk.SimpleMotor(wheel2_b, chassis_b, speed),
-        # pymunk.SimpleMotor(wheel3_b, chassis_b, speed)
+        pymunk.SimpleMotor(wheel3_b, chassis_b, speed)
     ]
     space.add(*motors)
     return motors, chassis_b
@@ -207,6 +221,8 @@ while previous[0] < 9000:
     previous = (x, y)
 
 pog_car = create_pogo(space, 400, 600)
+create_pogo(space, 400, 500)
+create_pogo(space, 400, 700)
 
 motors, car = create_rover(space, 200, 600)
 acc = 8
@@ -276,5 +292,6 @@ while running:
             transformed_vertices = [v.rotated(body.angle) + body.position for v in vertices]
             screen_vertices = [to_pygame(v, screen) + scroll for v in transformed_vertices]
             pygame.draw.line(screen, (0, 255, 0), *screen_vertices, int(shape.radius))
+    # space.debug_draw(draw_options)
 
     pygame.display.flip()
